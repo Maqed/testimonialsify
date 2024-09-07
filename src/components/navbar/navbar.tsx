@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 // import { Menu } from "lucide-react";
 import NavbarAuth from "./navbar-auth";
+import { APP_NAME } from "@/consts/app-data";
 // import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 // import {
 //   Sheet,
@@ -14,12 +15,10 @@ import NavbarAuth from "./navbar-auth";
 
 export default function Navbar() {
   return (
-    <header className="bg-background container flex h-16 items-center justify-between">
+    <header className="container flex h-16 items-center justify-between bg-background">
       <Link href="/" className="flex items-center gap-2">
         <Image src="/logo.png" alt="Logo" width={40} height={40} />
-        <h1 className="hidden text-lg font-semibold md:block">
-          Testimonialsify
-        </h1>
+        <h1 className="hidden text-lg font-semibold md:block">{APP_NAME}</h1>
       </Link>
       <nav className="flex items-center gap-x-2">
         <NavbarAuth />

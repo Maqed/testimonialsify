@@ -1,5 +1,6 @@
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { APP_NAME } from "@/consts/app-data";
 const poppinsFont = Poppins({
   subsets: ["latin"],
   weight: ["600"],
@@ -13,9 +14,9 @@ export default function HeaderComponent({ label }: HeaderProps) {
   return (
     <div className="flex w-full flex-col items-center justify-center gap-y-4">
       <h1 className={cn("text-3xl font-semibold", poppinsFont.className)}>
-        Testimonialsify
+        {APP_NAME}
       </h1>
-      <p className="text-muted-foreground text-sm">{label}</p>
+      <p className="text-sm text-muted-foreground">{label}</p>
     </div>
   );
 }
