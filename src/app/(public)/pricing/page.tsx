@@ -58,7 +58,7 @@ function PricingCard({ price, features, type }: PricingCardProps) {
           {features.map((feature, index) => (
             <li key={index} className="flex items-center">
               <Check className="text-success mr-2" />
-              {feature}
+              {feature.replaceAll("Infinity", "Unlimited")}
             </li>
           ))}
         </ul>
