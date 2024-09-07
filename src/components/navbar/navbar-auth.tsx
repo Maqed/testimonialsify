@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { getFirstLettersOfWords } from "@/lib/utils";
-import { CircleGauge, Settings, LogOut } from "lucide-react";
+import { CircleGauge, Settings, LogOut, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -16,10 +16,32 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DEFAULT_LOGOUT_REDIRECT } from "@/consts/routes";
 
+type listItem = {
+  name: string;
+  href: string;
+};
+
+const unauthenticatedLinks: listItem[] = [
+  {
+    name: "Pricing",
+    href: "/pricing",
+  },
+  {
+    name: "Login",
+    href: "/login",
+  },
+];
+
 function NavbarAuth() {
   const { data: session, status } = useSession();
   if (status === "loading")
-    return <Skeleton className="h-10 w-10 rounded-full" />;
+    return (
+      <div className="flex items-center justify-center gap-5">
+        <Skeleton className="h-5 w-10 rounded-none" />
+        <Skeleton className="h-5 w-10 rounded-none" />
+        <Skeleton className="h-10 w-32" />
+      </div>
+    );
 
   return session ? (
     <DropdownMenu>
@@ -52,7 +74,7 @@ function NavbarAuth() {
           </DropdownMenuItem>
         </Link>
         <DropdownMenuItem
-          className="focus:bg-destructive/80 bg-destructive text-destructive-foreground focus:text-desctructive-foreground relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+          className="focus:text-desctructive-foreground relative flex cursor-pointer select-none items-center rounded-sm bg-destructive px-2 py-1.5 text-sm text-destructive-foreground outline-none transition-colors focus:bg-destructive/80 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
           onClick={() =>
             signOut({ redirect: true, callbackUrl: DEFAULT_LOGOUT_REDIRECT })
           }
@@ -63,11 +85,17 @@ function NavbarAuth() {
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
-    <>
-      <Button size="sm" asChild>
-        <Link href="/login">Login</Link>
+    <div className="flex items-center justify-center gap-5">
+      {unauthenticatedLinks.map((item) => {
+        return <Link href={item.href}>{item.name}</Link>;
+      })}
+      <Button asChild className="group font-bold">
+        <Link href="/register">
+          Try it now!
+          <ArrowRight className="ms-1 h-5 w-5 transition-all group-hover:translate-x-1" />
+        </Link>
       </Button>
-    </>
+    </div>
   );
 }
 
