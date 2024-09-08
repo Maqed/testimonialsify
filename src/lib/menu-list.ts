@@ -1,4 +1,4 @@
-import { LayoutGrid, LucideIcon } from "lucide-react";
+import { LayoutGrid, type LucideIcon } from "lucide-react";
 
 type Submenu = {
   href: string;

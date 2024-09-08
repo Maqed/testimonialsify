@@ -17,7 +17,7 @@ async function ProjectsPage() {
       <main className="container">
         {projects.length ? (
           projects.map((project) => {
-            return <h1>{project.name}</h1>;
+            return <h1 key={project.id}>{project.name}</h1>;
           })
         ) : (
           <div className="flex flex-col items-center justify-center py-12">

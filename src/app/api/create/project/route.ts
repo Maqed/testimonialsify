@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
+import { createProjectsSchema } from "@/zod/projects";
 
 export async function POST(request: Request) {
+  const data = await request.json();
+  const validatedValues = createProjectsSchema.safeParse(data);
+  if (!validatedValues?.data) {
+    return NextResponse.json({ error: "Invalid data" }, { status: 401 });
+  }
   const session = await getServerAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -23,10 +29,9 @@ export async function POST(request: Request) {
       { status: 403 },
     );
   }
-  const data = await request.json();
   const project = await db.project.create({
     data: {
-      name: data.name,
+      name: validatedValues.data.name,
       userId,
     },
   });

@@ -106,7 +106,11 @@ function NavbarAuth({ skeletonType = "unauthenticated" }: Props) {
   ) : (
     <div className="flex items-center justify-center gap-5">
       {unauthenticatedLinks.map((item) => {
-        return <Link href={item.href}>{item.name}</Link>;
+        return (
+          <Link key={item.href} href={item.href}>
+            {item.name}
+          </Link>
+        );
       })}
       <Button asChild className="group font-bold">
         <Link href="/register">
