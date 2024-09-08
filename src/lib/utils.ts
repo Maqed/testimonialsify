@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { env } from "@/env";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -15,4 +16,8 @@ export function getFirstLettersOfWords(str: string | null | undefined) {
     }
   }
   return output;
+}
+
+export function absoluteURL(url: string) {
+  return `${env.NEXT_PUBLIC_WEBSITE_URL}${url}`;
 }
