@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { getFirstLettersOfWords } from "@/lib/utils";
-import { CircleGauge, Settings, LogOut, ArrowRight } from "lucide-react";
+import {
+  CircleGauge,
+  Settings,
+  LogOut,
+  ArrowRight,
+  SquareChartGantt,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -67,6 +73,13 @@ function NavbarAuth() {
             Dashboard
           </DropdownMenuItem>
         </Link>
+        <Link href="/projects">
+          <DropdownMenuItem>
+            <SquareChartGantt className="mr-2 h-4 w-4" />
+            Projects
+          </DropdownMenuItem>
+        </Link>
+        <DropdownMenuSeparator />
         <Link href="/user-settings">
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />

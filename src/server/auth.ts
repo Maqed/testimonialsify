@@ -23,15 +23,17 @@ declare module "next-auth" {
       id: string;
       name: string;
       image: string;
+      tierId: string;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    // ...other properties
+    // role: UserRole;
+    tierId: string;
+  }
 }
 
 /**
@@ -46,6 +48,7 @@ export const authOptions: NextAuthOptions = {
       user: {
         ...session.user,
         id: user.id,
+        tierId: user.tierId,
       },
     }),
   },
