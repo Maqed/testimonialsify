@@ -1,9 +1,8 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 // import { Menu } from "lucide-react";
 import NavbarAuth from "./navbar-auth";
-import { APP_NAME } from "@/consts/app-data";
+import Logo from "@/components/testimonialsify/logo";
 // import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 // import {
 //   Sheet,
@@ -17,8 +16,7 @@ export default function Navbar() {
   return (
     <header className="container flex h-16 items-center justify-between bg-background">
       <Link href="/" className="flex items-center gap-2">
-        <Image src="/logo.png" alt="Logo" width={40} height={40} />
-        <h1 className="hidden text-lg font-semibold md:block">{APP_NAME}</h1>
+        <Logo />
       </Link>
       <nav className="flex items-center gap-x-2">
         <NavbarAuth />
