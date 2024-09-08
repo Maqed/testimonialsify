@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { getFirstLettersOfWords } from "@/lib/utils";
 import {
-  CircleGauge,
+  LayoutGrid,
   Settings,
   LogOut,
   ArrowRight,
@@ -38,10 +38,16 @@ const unauthenticatedLinks: listItem[] = [
   },
 ];
 
-function NavbarAuth() {
+type Props = {
+  skeletonType?: "authenticated" | "unauthenticated";
+};
+
+function NavbarAuth({ skeletonType = "unauthenticated" }: Props) {
   const { data: session, status } = useSession();
   if (status === "loading")
-    return (
+    return skeletonType === "authenticated" ? (
+      <Skeleton className="h-10 w-10 rounded-full" />
+    ) : (
       <div className="flex items-center justify-center gap-5">
         <Skeleton className="h-5 w-10 rounded-none" />
         <Skeleton className="h-5 w-10 rounded-none" />
@@ -69,7 +75,7 @@ function NavbarAuth() {
         <DropdownMenuSeparator />
         <Link href="/dashboard">
           <DropdownMenuItem>
-            <CircleGauge className="mr-2 h-4 w-4" />
+            <LayoutGrid className="mr-2 h-4 w-4" />
             Dashboard
           </DropdownMenuItem>
         </Link>
