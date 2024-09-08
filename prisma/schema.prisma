@@ -86,6 +86,8 @@ model Project {
     videoReviews VideoReview[]
     createdAt    DateTime      @default(now())
     updatedAt    DateTime      @updatedAt
+
+    @@unique([userId, name])
 }
 
 model TextReview {
