@@ -31,6 +31,7 @@ function EditAccountSection({ isPending, startTransition }: Props) {
     resolver: zodResolver(userSettingsSchema),
     defaultValues: {
       name: session?.user.name,
+      username: session?.user.username,
     },
     values: session?.user,
   });
@@ -70,6 +71,52 @@ function EditAccountSection({ isPending, startTransition }: Props) {
                 </FormControl>
                 <FormDescription>
                   Your name is shown to the public
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  {status === "loading" ? (
+                    <Skeleton className="h-10 w-full" />
+                  ) : (
+                    <Input
+                      disabled={isPending}
+                      placeholder="Unique Username"
+                      {...field}
+                      onBlur={async () => {
+                        try {
+                          const userInput =
+                            userSettingsSchema.shape.username.parse(
+                              field.value,
+                            );
+                          if (
+                            userInput &&
+                            userInput !== session?.user.username
+                          ) {
+                            const response = await fetch(
+                              `/api/user/isUserUnique?username=${field.value}`,
+                            );
+                            const data = await response.json();
+                            if (!data.isUnique) {
+                              toast.error(
+                                "Username is not unique, try something else.",
+                              );
+                            }
+                          }
+                        } catch (error) {}
+                      }}
+                    />
+                  )}
+                </FormControl>
+                <FormDescription>
+                  Username will be displayed in the testimonial share link
                 </FormDescription>
                 <FormMessage />
               </FormItem>

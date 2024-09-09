@@ -10,7 +10,9 @@ import GithubProvider from "next-auth/providers/github";
 
 import { env } from "@/env";
 import { db } from "@/server/db";
-import { UserUsage } from "@prisma/client";
+import { UserUsage, User } from "@prisma/client";
+import { kebabCase } from "@/lib/utils";
+import { generateRandomNumbers } from "@/lib/utils"; // Import the new function
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -24,6 +26,7 @@ declare module "next-auth" {
       id: string;
       name: string;
       image: string;
+      username: string;
       tierId: string;
       userUsage: UserUsage;
       // ...other properties
@@ -35,6 +38,7 @@ declare module "next-auth" {
     // ...other properties
     // role: UserRole;
     tierId: string;
+    username: string;
     userUsage: UserUsage;
   }
 }
@@ -46,19 +50,47 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: async ({ session, user }) => {
-      if (user && !user.userUsage) {
-        const userUsage = await db.userUsage.upsert({
-          where: { userId: user.id },
-          update: {},
-          create: {
-            userId: user.id,
-            projects: 0,
-            textReviews: 0,
-            videoReviews: 0,
-          },
-        });
+    signIn: async ({ user }) => {
+      if (user) {
+        if (!user.userUsage) {
+          await db.userUsage.upsert({
+            where: { userId: user.id },
+            update: {},
+            create: {
+              userId: user.id,
+              projects: 0,
+              textReviews: 0,
+              videoReviews: 0,
+            },
+          });
+        }
+        if (!user.username) {
+          let baseUsername = kebabCase(user.name as string);
+          let uniqueUsername = baseUsername;
+
+          while (true) {
+            const randomSuffix = generateRandomNumbers(4);
+            uniqueUsername = `${baseUsername}-${randomSuffix}`;
+            let existingUser: User | null = null;
+            try {
+              existingUser = await db.user.findUnique({
+                where: { username: uniqueUsername },
+              });
+            } catch (error) {}
+
+            if (!existingUser) {
+              break;
+            }
+          }
+          await db.user.update({
+            where: { id: user.id },
+            data: { username: uniqueUsername },
+          });
+        }
       }
+      return true;
+    },
+    session: async ({ session, user }) => {
       return {
         ...session,
         user: {
@@ -66,6 +98,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           tierId: user.tierId,
           userUsage: user.userUsage,
+          username: user.username,
         },
       };
     },

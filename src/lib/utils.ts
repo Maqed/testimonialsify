@@ -21,3 +21,14 @@ export function getFirstLettersOfWords(str: string | null | undefined) {
 export function absoluteURL(url: string) {
   return `${env.NEXT_PUBLIC_WEBSITE_URL}${url}`;
 }
+export function kebabCase(str: string) {
+  return str.replace(" ", "-").toLowerCase();
+}
+
+export function generateRandomNumbers(length: number): string {
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += Math.floor(Math.random() * 10).toString();
+  }
+  return result;
+}
