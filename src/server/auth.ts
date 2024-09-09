@@ -10,6 +10,7 @@ import GithubProvider from "next-auth/providers/github";
 
 import { env } from "@/env";
 import { db } from "@/server/db";
+import { UserUsage } from "@prisma/client";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -24,6 +25,7 @@ declare module "next-auth" {
       name: string;
       image: string;
       tierId: string;
+      userUsage: UserUsage;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -33,6 +35,7 @@ declare module "next-auth" {
     // ...other properties
     // role: UserRole;
     tierId: string;
+    userUsage: UserUsage;
   }
 }
 
@@ -43,14 +46,29 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-        tierId: user.tierId,
-      },
-    }),
+    session: async ({ session, user }) => {
+      if (user && !user.userUsage) {
+        const userUsage = await db.userUsage.upsert({
+          where: { userId: user.id },
+          update: {},
+          create: {
+            userId: user.id,
+            projects: 0,
+            textReviews: 0,
+            videoReviews: 0,
+          },
+        });
+      }
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          tierId: user.tierId,
+          userUsage: user.userUsage,
+        },
+      };
+    },
   },
   adapter: PrismaAdapter(db) as Adapter,
   providers: [

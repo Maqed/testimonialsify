@@ -43,18 +43,19 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime? @updatedAt
-    email         String?   @unique
+    createdAt     DateTime   @default(now())
+    updatedAt     DateTime?  @updatedAt
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    tier          Tier      @relation(fields: [tierId], references: [id])
-    tierId        String    @default("free")
+    tier          Tier       @relation(fields: [tierId], references: [id])
+    tierId        String     @default("free")
     projects      Project[]
+    UserUsage     UserUsage?
 }
 
 model VerificationToken {
@@ -111,4 +112,13 @@ model VideoReview {
     projectId    String
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
+}
+
+model UserUsage {
+    id           String @id @default(cuid())
+    projects     Int    @default(0)
+    textReviews  Int    @default(0)
+    videoReviews Int    @default(0)
+    user         User   @relation(fields: [userId], references: [id])
+    userId       String @unique
 }
