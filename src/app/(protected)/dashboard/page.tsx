@@ -1,7 +1,12 @@
 "use client";
 import { useSession } from "next-auth/react";
 import CreateProjectCard from "@/components/testimonialsify/create-project-card";
-import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/providers/client-side";
@@ -14,9 +19,9 @@ import {
 } from "@/components/ui/breadcrumb";
 
 function DashboardPage() {
-  const { data: session, status: sessionStatus } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
-  const { data: projects, isLoading: isQueryLoading } = useQuery({
+  const { data: projects, isFetched } = useQuery({
     queryKey: ["projects", session],
     queryFn: async () => {
       const response = await fetch(`/api/projects`);
@@ -29,9 +34,12 @@ function DashboardPage() {
     queryClient.invalidateQueries({ queryKey: ["projects"] });
     router.refresh();
   };
-  if (projects.length === 0 && sessionStatus !== "loading" && !isQueryLoading) {
+  if (!projects.length && isFetched) {
     return (
       <AlertDialog open={true}>
+        <VisuallyHidden.Root>
+          <AlertDialogTitle>CreateProjectCard</AlertDialogTitle>
+        </VisuallyHidden.Root>
         <AlertDialogContent className="w-max p-0">
           <CreateProjectCard onSubmitSuccess={handleDialogClose} />
         </AlertDialogContent>
