@@ -51,6 +51,9 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   callbacks: {
     signIn: async ({ user }) => {
+      return true;
+    },
+    session: async ({ session, user }) => {
       if (user) {
         if (!user.userUsage) {
           await db.userUsage.upsert({
@@ -88,9 +91,6 @@ export const authOptions: NextAuthOptions = {
           });
         }
       }
-      return true;
-    },
-    session: async ({ session, user }) => {
       return {
         ...session,
         user: {
