@@ -2,12 +2,14 @@ import { NextResponse } from "next/server";
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
 import { createProjectsSchema } from "@/zod/projects";
+import { kebabCase } from "@/lib/utils";
 
 export async function POST(request: Request) {
   const data = await request.json();
   const validatedValues = createProjectsSchema.safeParse(data);
+
   if (!validatedValues?.data) {
-    return NextResponse.json({ error: "Invalid data" }, { status: 401 });
+    return NextResponse.json({ error: validatedValues.error }, { status: 401 });
   }
   const session = await getServerAuthSession();
   if (!session) {
@@ -29,6 +31,21 @@ export async function POST(request: Request) {
       { status: 403 },
     );
   }
+  const { name } = validatedValues.data;
+
+  const url = kebabCase(name);
+
+  const isProjectURLTaken = await db.project.findUnique({ where: { url } });
+
+  if (isProjectURLTaken) {
+    return NextResponse.json(
+      {
+        error:
+          "Project name has already been taken, please try a different one.",
+      },
+      { status: 401 },
+    );
+  }
 
   if (userUsage.projects >= tier.maxProjects) {
     return NextResponse.json(
@@ -39,7 +56,8 @@ export async function POST(request: Request) {
 
   const project = await db.project.create({
     data: {
-      name: validatedValues.data.name,
+      name: name,
+      url,
       userId,
     },
   });
