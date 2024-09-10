@@ -57,7 +57,7 @@ function PricingCard({ price, features, type }: PricingCardProps) {
         <ul className="mt-4 space-y-2">
           {features.map((feature, index) => (
             <li key={index} className="flex items-center">
-              <Check className="text-success mr-2" />
+              <Check className="mr-2 text-success" />
               {feature.replaceAll("Infinity", "Unlimited")}
             </li>
           ))}
@@ -71,7 +71,9 @@ function PricingCard({ price, features, type }: PricingCardProps) {
           )}
           asChild
         >
-          <Link href={actionLinkHref}>Get Started</Link>
+          <Link href={actionLinkHref}>
+            {type === "Custom" ? "Contact Me" : "Get Started"}
+          </Link>
         </Button>
       </div>
     </div>
