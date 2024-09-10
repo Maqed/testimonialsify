@@ -30,7 +30,7 @@ function CreateProjectCard({ onSubmitSuccess }: Props) {
     },
   });
   async function onSubmit(values: z.infer<typeof createProjectsSchema>) {
-    const createProjectPromise = fetch(absoluteURL("/api/create/project"), {
+    const createProject = await fetch(absoluteURL("/api/create/project"), {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -38,7 +38,10 @@ function CreateProjectCard({ onSubmitSuccess }: Props) {
       },
       body: JSON.stringify(values),
     });
-    toast.promise(createProjectPromise, {
+
+    const createProjectResult = await createProject.json();
+
+    toast.promise(Promise.resolve(createProject), {
       loading: "Creating Project....",
       success: () => {
         if (onSubmitSuccess) {
@@ -46,7 +49,9 @@ function CreateProjectCard({ onSubmitSuccess }: Props) {
         }
         return "Project has been created successfully!";
       },
-      error: "An error has occured",
+      error: () => {
+        return createProjectResult.error || "An error has occurred";
+      },
     });
   }
   return (
