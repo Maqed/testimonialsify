@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { updateUserAction } from "@/actions/users";
+import { absoluteURL } from "@/lib/utils";
 
 type Props = {
   isPending: boolean;
@@ -37,12 +38,18 @@ function EditAccountSection({ isPending, startTransition }: Props) {
   });
   async function onSubmit(values: z.infer<typeof userSettingsSchema>) {
     startTransition(async () => {
-      const response = await updateUserAction(values);
-      await update();
-      if (response.message) {
-        toast.success(response.message);
-      } else if (response.error) {
-        toast.error(response.error);
+      const response = await fetch(absoluteURL("/api/user"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      const data = await response.json();
+      if (data.updatedUser) {
+        toast.success("Profile updated successfully!");
+      } else {
+        toast.error(data.error);
       }
     });
   }

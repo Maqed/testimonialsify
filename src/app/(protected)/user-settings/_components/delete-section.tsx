@@ -4,7 +4,6 @@ import type { FormEvent } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { DEFAULT_UNAUTHENTICATED_REDIRECT } from "@/consts/routes";
-import { deleteAccountAction } from "@/actions/users";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -19,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { TransitionStartFunction } from "react";
+import { absoluteURL } from "@/lib/utils";
 
 type Props = {
   isPending: boolean;
@@ -34,16 +34,19 @@ function DeleteAccountSection({ isPending, startTransition }: Props) {
   async function deleteAccount(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     startTransition(async () => {
-      const response = await deleteAccountAction();
+      const response = await fetch(absoluteURL("/api/user"), {
+        method: "DELETE",
+      });
+      const data = await response.json();
       await signOut();
       router.push(DEFAULT_UNAUTHENTICATED_REDIRECT);
-      toast.error(response.message ?? response.error);
+      toast.error(data.error ?? "Account deleted successfully.");
     });
   }
 
   return (
     <section>
-      <h1 className="text-destructive text-3xl font-bold">Delete Account</h1>
+      <h1 className="text-3xl font-bold text-destructive">Delete Account</h1>
       <hr className="my-2" />
       <p className="mb-2">
         Once you delete your account, there is no going back. Please be certain.
@@ -65,14 +68,14 @@ function DeleteAccountSection({ isPending, startTransition }: Props) {
           <form className="flex flex-col gap-y-3" onSubmit={deleteAccount}>
             <Label htmlFor="confirm-delete-name-input">
               Type your name{" "}
-              <span className="text-foreground/80 italic">
+              <span className="italic text-foreground/80">
                 {session?.user.name}
               </span>
             </Label>
             <Input ref={confirmDeleteName} id="confirm-delete-name-input" />
             <Label htmlFor="confirm-delete-message-input">
               Confirm by typing this message{" "}
-              <span className="text-foreground/80 italic">
+              <span className="italic text-foreground/80">
                 delete my account
               </span>
             </Label>
